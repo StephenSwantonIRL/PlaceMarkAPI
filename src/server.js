@@ -12,7 +12,6 @@ import Handlebars from "handlebars";
 import { webRoutes } from "./web-routes.js";
 import { apiRoutes } from "./api-routes.js"
 import { db } from "./models/db.js";
-import { accountsController } from "./controllers/accounts-controller.js";
 import HapiSwagger from "hapi-swagger";
 
 const __filename = fileURLToPath(import.meta.url);
