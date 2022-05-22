@@ -8,7 +8,6 @@ import Joi from "joi";
 import jwt from "hapi-auth-jwt2";
 import { validate } from "../api/jwt-utils.js";
 import { fileURLToPath } from "url";
-import Handlebars from "handlebars";
 import { apiRoutes } from "./api-routes.js"
 import { db } from "./models/db.js";
 import HapiSwagger from "hapi-swagger";
@@ -57,23 +56,13 @@ async function init() {
   ]);
   server.validator(Joi);
 
-  server.auth.strategy("session", "cookie", {
-    cookie: {
-      name: process.env.cookie_name,
-      password: process.env.cookie_password,
-      isSecure: false,
-    },
-    redirectTo: "/",
-    validateFunc: accountsController.validate,
-  });
-
   server.auth.strategy("jwt", "jwt", {
     key: process.env.cookie_password,
     validate: validate,
     verifyOptions: { algorithms: ["HS256"] },
   });
 
-  server.auth.default("session");
+  server.auth.default("jwt");
 
   db.init("mongo");
   server.route(apiRoutes);
