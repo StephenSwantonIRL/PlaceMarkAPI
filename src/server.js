@@ -57,18 +57,6 @@ async function init() {
   ]);
   server.validator(Joi);
 
-  server.views({
-    engines: {
-      hbs: Handlebars,
-    },
-    relativeTo: __dirname,
-    path: "./views",
-    layoutPath: "./views/layouts",
-    partialsPath: "./views/partials",
-    layout: true,
-    isCached: false,
-  });
-
   server.auth.strategy("session", "cookie", {
     cookie: {
       name: process.env.cookie_name,
