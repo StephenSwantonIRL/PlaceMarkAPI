@@ -15,6 +15,11 @@ export const placeMarkService = {
     return res.data;
   },
 
+  async getUserByEmail(email) {
+    const res = await axios.post(`${this.placeMarkUrl}/api/users/find`, {email: email});
+    return res.data;
+  },
+
   async getAllUsers() {
     const res = await axios.get(`${this.placeMarkUrl}/api/users`);
     return res.data;

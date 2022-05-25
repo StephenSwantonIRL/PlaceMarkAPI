@@ -9,7 +9,8 @@ const users = new Array(testUsers.length);
 
 suite("User API tests", () => {
   setup(async () => {
-    db.init("fire");
+    db.init("mongo");
+    await placeMarkService.deleteAllUsers();
     await placeMarkService.createUser(maggie);
     await placeMarkService.authenticate(maggieCredentials);
     await placeMarkService.deleteAllUsers();
@@ -45,6 +46,14 @@ suite("User API tests", () => {
     const newUser = await placeMarkService.createUser(maggie);
     await placeMarkService.authenticate(maggieCredentials);
     const returnedUser = await placeMarkService.getUser(users[0]._id);
+    assert.deepEqual(users[0], returnedUser);
+    await placeMarkService.deleteAllUsers();
+  });
+
+  test("get a user by email", async () => {
+    const newUser = await placeMarkService.createUser(maggie);
+    await placeMarkService.authenticate(maggieCredentials);
+    const returnedUser = await placeMarkService.getUserByEmail(users[0].email);
     assert.deepEqual(users[0], returnedUser);
     await placeMarkService.deleteAllUsers();
   });

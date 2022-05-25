@@ -45,6 +45,31 @@ export const userApi = {
     response: { schema: UserSpecPlus, failAction: validationError },
   },
 
+  findOneByEmail: {
+    auth: {
+      strategy: "jwt",
+    },
+    handler: async function (request, h) {
+      try {
+        console.log("find run")
+        const user = await db.userStore.getUserByEmail(request.payload.email);
+        console.log(user)
+        if (!user) {
+          return Boom.notFound("No User with this email");
+        }
+        return user;
+      } catch (err) {
+        return Boom.serverUnavailable("No User with this email");
+      }
+    },
+    tags: ["api"],
+    description: "Get a User by Email",
+    notes: "Returns details of a single user identified by their Email",
+    // response: { schema: UserSpecPlus, failAction: validationError },
+  },
+
+
+
   create: {
     auth: false,
     handler: async function (request, h) {
@@ -86,8 +111,9 @@ export const userApi = {
     auth: false,
     handler: async function (request, h) {
       try {
-        console.log("this ran 1")
+        console.log(request.payload)
         const user = await db.userStore.getUserByEmail(request.payload.email);
+        console.log(user)
         console.log("this ran")
         if (!user) {
           return Boom.unauthorized("User not found");
@@ -104,7 +130,7 @@ export const userApi = {
     tags: ["api"],
     description: "Authenticate a User",
     notes: "If user has valid email/password, create and return a JWT token",
-    validate: { payload: UserCredentialsSpec, failAction: validationError },
-    response: { schema: JwtAuth, failAction: validationError }
+    // validate: { payload: UserCredentialsSpec, failAction: validationError },
+    // response: { schema: JwtAuth, failAction: validationError }
   },
 };
