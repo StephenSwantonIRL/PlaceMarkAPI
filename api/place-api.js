@@ -5,7 +5,7 @@ import {
   PlaceSpecAPI,
   PlaceSpecPlus,
   PlaceSpecPlusWithCategoriesObject,
-  IdSpec,
+  IdSpec, PlaceSpecWithCategory, PlaceSpecWithCategoryAndId,
 } from "../src/models/joi-schemas.js";
 import { validationError} from "./logger.js";
 
@@ -61,6 +61,7 @@ export const placeApi = {
     handler: async function (request, h) {
       try {
         const place = request.payload;
+        place.createdBy = request.auth.credentials._id
         const newPlace = await db.placeStore.addPlace(place);
         console.log(newPlace)
         if (newPlace) {
@@ -74,8 +75,56 @@ export const placeApi = {
     tags: ["api"],
     description: "Creates a new Place",
     notes: "Adds a new place to the database",
-    validate: { payload: PlaceSpecAPI, failAction: validationError },
+    validate: { payload: PlaceSpecWithCategory, failAction: validationError },
     response: { schema: PlaceSpecPlus, failAction: validationError }
+  },
+
+  saveEdited: {
+    auth: {
+      strategy: "jwt",
+    },
+    validate: {
+      payload: PlaceSpecWithCategoryAndId,
+      options: { abortEarly: false },
+      failAction: function (request, h, error) {
+        console.log(error.details);
+        return Boom.badRequest("Invalid Query");
+      },
+    },
+    handler: async function (request, h) {
+      const updatedPlace = request.payload;
+      if (request.payload.images) {
+        const imageString = request.payload.images;
+        const imageArray = imageString.split(",");
+        imageArray.pop();
+        updatedPlace.images = imageArray;
+      }
+      updatedPlace.createdBy = request.auth.credentials._id
+      const updatePlace = await db.placeStore.updatePlace(request.params.id, updatedPlace);
+      if (updatePlace.message) {
+        const errorDetails = [{ message: updatePlace.message }];
+        console.log(errorDetails)
+        return Boom.badRequest("Invalid Query");
+      }
+      const originalCategories = await db.categoryStore.getCategoriesByPlace(request.params.id);
+      if (originalCategories) {
+        for (let i = 0; i < originalCategories.length; i += 1) {
+          await db.categoryStore.deletePlace(request.params.id, originalCategories[i]._id);
+        }
+      }
+      let categories;
+      if (request.payload.categories === "") {
+        categories = [];
+      } else {
+        categories = JSON.parse(request.payload.categories);
+      }
+      for (let i = 0; i < categories.length; i += 1) {
+        const category = await db.categoryStore.getCategoryByName(categories[i].value);
+        await db.categoryStore.addPlace(request.params.id, category._id);
+      }
+      const result = await db.placeStore.getPlaceById(updatedPlace._id);
+      return result
+    },
   },
 
   deleteOne: {

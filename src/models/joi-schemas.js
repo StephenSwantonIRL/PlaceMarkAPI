@@ -53,6 +53,11 @@ export const PlaceSpecWithCategory = PlaceSpec.keys({
   categories: Joi.string().allow("", null).optional(),
 }).label("PlaceSpecAPI");
 
+export const PlaceSpecWithCategoryAndId = PlaceSpecWithCategory.keys({
+  _id: IdSpec,
+}).label("PlaceSpecAPI");
+
+
 export const PlaceSpecPlusWithCategoriesObject = PlaceSpecAPI.keys({
   categories: Joi.array().items(
     Joi.object().keys({
