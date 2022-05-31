@@ -8,6 +8,7 @@ import {
   IdSpec, PlaceSpecWithCategory, PlaceSpecWithCategoryAndId,
 } from "../src/models/joi-schemas.js";
 import { validationError} from "./logger.js";
+import { imageStore } from "../src/models/image-store.js";
 
 export const placeApi = {
   find: {
@@ -167,6 +168,29 @@ export const placeApi = {
     description: "Deletes all places. ",
     notes: "Deletes all places from the database",
   },
-  
+  uploadImage: {
+    auth: {
+      strategy: "jwt",
+    },
+    handler: async function (request, h) {
+      try {
+        const file = request.payload.imagefile;
+        if (Object.keys(file).length > 0) {
+          const url = await imageStore.uploadImage(request.payload.imagefile);
+          return { url: url };
+        }
+      } catch (err) {
+        console.log(err);
+        return Boom.badImplementation(err);
+      }
+      return Boom.badImplementation("Something went wrong.. :( ");
+    },
+    payload: {
+      multipart: true,
+      output: "data",
+      maxBytes: 209715200,
+      parse: true,
+    },
+  },
   
 };

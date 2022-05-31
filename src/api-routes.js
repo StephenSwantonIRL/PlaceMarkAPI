@@ -1,6 +1,7 @@
 import { userApi } from "../api/user-api.js"
 import { placeApi } from "../api/place-api.js";
 import { categoryApi } from "../api/category-api.js";
+import { placeController } from "./controllers/placemark-controller.js";
 
 export const apiRoutes = [
   { method: "GET", path: "/api/users", config: userApi.find },
@@ -16,6 +17,7 @@ export const apiRoutes = [
   { method: "GET", path: "/api/placemark/{id}", config: placeApi.findOne },
   { method: "POST", path: "/api/placemark/{id}", config: placeApi.saveEdited },
   { method: "DELETE", path: "/api/placemark/{id}", config: placeApi.deleteOne },
+  { method: "POST", path: "/api/place/uploadimage", config: placeApi.uploadImage },
 
   { method: "POST", path: "/api/placemark/category", config: categoryApi.create },
   { method: "DELETE", path: "/api/placemark/category", config: categoryApi.deleteAll },
