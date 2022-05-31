@@ -2,15 +2,15 @@ import Joi from "joi";
 
 export const UserCredentialsSpec = {
   email: Joi.string().email().required(),
-  password: Joi.string().required(),
+  password: Joi.string().min(6).required(),
 };
 
 export const UserSpec = Joi.object()
   .keys({
-    firstName: Joi.string().example("Homer").required(),
-    lastName: Joi.string().example("Simpson").required(),
+    firstName: Joi.string().min(2).pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).example("Homer").required(),
+    lastName: Joi.string().min(2).pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).example("Simpson").required(),
     email: Joi.string().email().example("homer@simpson.com").required(),
-    password: Joi.string().example("yourSecretPassword").required(),
+    password: Joi.string().min(6).example("yourSecretPassword").required(),
   })
   .label("UserDetails");
 
@@ -30,7 +30,7 @@ export const PlaceSpecBase = Joi.object()
 
 export const PlaceSpec = PlaceSpecBase
   .keys({
-    images: Joi.string().allow("", null).optional(),
+    images: Joi.string().pattern(new RegExp("(https:\\/\\/res\\.cloudinary\\.com\\/dyyleuyou\\/image\\/upload\\/[a-zA-Z.:\\/0-9]*(jpeg|jpg|png),)*")).allow("", null).optional(),
   })
   .label("PlaceDetails");
 
@@ -38,19 +38,19 @@ export const IdSpec = Joi.alternatives().try(Joi.string(), Joi.object()).descrip
 
 export const CategorySpec = Joi.object()
   .keys({
-    name: Joi.string().example("Isolated Places").required(),
+    name: Joi.string().pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).example("Isolated Places").required(),
     places: Joi.array().items(IdSpec).optional(),
   })
   .label("CategoryDetails");
 
 
 export const PlaceSpecAPI = PlaceSpecBase.keys({
-  images: Joi.array().items(Joi.string().allow("", null).optional()),
+  images: Joi.array().items(Joi.string().pattern(new RegExp("(https:\\/\\/res\\.cloudinary\\.com\\/dyyleuyou\\/image\\/upload\\/[a-zA-Z.:\\/0-9]*(jpeg|jpg|png),)*")).allow("", null).optional()),
   createdBy: IdSpec,
 }).label("PlaceSpecAPI");
 
 export const PlaceSpecWithCategory = PlaceSpec.keys({
-  categories: Joi.string().allow("", null).optional(),
+  categories: Joi.string().pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).allow("", null).optional(),
 }).label("PlaceSpecAPI");
 
 export const PlaceSpecWithCategoryAndId = PlaceSpecWithCategory.keys({
@@ -61,7 +61,7 @@ export const PlaceSpecWithCategoryAndId = PlaceSpecWithCategory.keys({
 export const PlaceSpecPlusWithCategoriesObject = PlaceSpecAPI.keys({
   categories: Joi.array().items(
     Joi.object().keys({
-      name: Joi.string(),
+      name: Joi.string().pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")),
       _id: IdSpec,
       __v: Joi.number(),
     })

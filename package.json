@@ -32,6 +32,7 @@
     "lodash": "^4.17.21",
     "lowdb": "^3.0.0",
     "mongoose": "^6.2.6",
+    "sanitize-html": "^2.7.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
