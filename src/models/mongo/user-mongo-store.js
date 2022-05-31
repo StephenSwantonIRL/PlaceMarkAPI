@@ -1,4 +1,6 @@
 import { User } from "./user.js";
+import bcrypt from "bcrypt";
+import { db } from "../db.js";
 
 export const userMongoStore = {
   async getAllUsers() {

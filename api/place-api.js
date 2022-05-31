@@ -218,4 +218,23 @@ export const placeApi = {
     },
   },
 
+
+  deleteImage: {
+    auth: {
+      strategy: "jwt",
+    },
+    handler: async function(request, h) {
+      try {
+        const image = request.params.id;
+        const action = await imageStore.deleteImage(image, {})
+        console.log(action)
+        return action;
+      } catch (err) {
+        console.log(err);
+        return Boom.badImplementation(err);
+      }
+      return Boom.badImplementation(action);
+    },
+  },
+
 };
