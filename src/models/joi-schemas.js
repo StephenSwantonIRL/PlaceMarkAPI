@@ -50,7 +50,7 @@ export const PlaceSpecAPI = PlaceSpecBase.keys({
 }).label("PlaceSpecAPI");
 
 export const PlaceSpecWithCategory = PlaceSpec.keys({
-  categories: Joi.string().pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).allow("", null).optional(),
+  categories: Joi.string().allow("", null).optional(),
 }).label("PlaceSpecAPI");
 
 export const PlaceSpecWithCategoryAndId = PlaceSpecWithCategory.keys({

@@ -62,6 +62,7 @@ export const placeApi = {
     },
     handler: async function(request, h) {
       try {
+        console.log(request.payload);
         const place = request.payload;
         if (request.payload.images) {
           const imageString = request.payload.images;
@@ -80,6 +81,21 @@ export const placeApi = {
         }
         place.createdBy = request.auth.credentials._id;
         const newPlace = await db.placeStore.addPlace(place);
+
+        let categories;
+        if (request.payload.categories === "") {
+          categories = [];
+        } else {
+          categories = request.payload.categories.split(",");
+        }
+        for (let i = 0; i < categories.length; i += 1) {
+
+          const category = await db.categoryStore.getCategoryByName(categories[i]);
+          console.log(category);
+          await db.categoryStore.addPlace(newPlace._id, category._id);
+        }
+        const result = await db.placeStore.getPlaceById(newPlace._id);
+
         console.log(newPlace);
         if (newPlace) {
           return h.response(newPlace).code(201);
@@ -142,10 +158,12 @@ export const placeApi = {
       if (request.payload.categories === "") {
         categories = [];
       } else {
-        categories = JSON.parse(request.payload.categories);
+        categories = request.payload.categories.split(",");
       }
       for (let i = 0; i < categories.length; i += 1) {
-        const category = await db.categoryStore.getCategoryByName(categories[i].value);
+
+        const category = await db.categoryStore.getCategoryByName(categories[i]);
+        console.log(category);
         await db.categoryStore.addPlace(request.params.id, category._id);
       }
       const result = await db.placeStore.getPlaceById(updatedPlace._id);
@@ -226,8 +244,8 @@ export const placeApi = {
     handler: async function(request, h) {
       try {
         const image = request.params.id;
-        const action = await imageStore.deleteImage(image, {})
-        console.log(action)
+        const action = await imageStore.deleteImage(image, {});
+        console.log(action);
         return action;
       } catch (err) {
         console.log(err);
