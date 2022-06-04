@@ -29,4 +29,7 @@ export const apiRoutes = [
   { method: "DELETE", path: "/api/placemark/category/{categoryId}/places/{placeId}", config: categoryApi.removePlace },
   { method: "GET", path: "/api/placemark/category/{id}/places", config: categoryApi.getPlaces },
 
+  { method: "POST", path: "/api/revokeToken", config: userApi.revokeToken },
+  { method: ["GET", "POST","DELETE"], path: "/api/checkToken", config: userApi.checkToken },
+
 ];

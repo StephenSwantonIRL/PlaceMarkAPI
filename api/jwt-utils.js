@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { db } from "../src/models/db.js";
+import { tokenMongoStore } from "../src/models/mongo/token-mongo-store.js";
 
 const result = dotenv.config();
 
@@ -29,6 +30,10 @@ export function decodeToken(token) {
 }
 
 export async function validate(decoded, request) {
+  const token = await tokenMongoStore.checkToken(request.auth.token);
+  if (token !== "ok") {
+    return { isValid: false };
+  }
   const user = await db.userStore.getUserById(decoded.id);
   if (!user) {
     return { isValid: false };

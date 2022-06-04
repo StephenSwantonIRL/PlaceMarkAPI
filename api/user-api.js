@@ -1,10 +1,11 @@
 import Boom from "@hapi/boom";
 import bcrypt from "bcrypt";
+import Joi from "joi";
 import { createToken } from "./jwt-utils.js";
 import { db } from "../src/models/db.js";
 import { UserArray, UserSpec, UserCredentialsSpec, UserSpecPlus, IdSpec, JwtAuth } from "../src/models/joi-schemas.js";
 import { validationError } from "./logger.js";
-import Joi from "joi";
+import { tokenMongoStore } from "../src/models/mongo/token-mongo-store.js";
 
 const saltRounds = 10;
 
@@ -67,7 +68,7 @@ export const userApi = {
     tags: ["api"],
     description: "Get a User by Email",
     notes: "Returns details of a single user identified by their Email",
-    validate: { payload: Joi.object().keys({email: Joi.string().email()}), failAction: validationError },
+    validate: { payload: Joi.object().keys({ email: Joi.string().email() }), failAction: validationError },
     response: { schema: UserSpecPlus, failAction: validationError },
   },
 
@@ -131,6 +132,28 @@ export const userApi = {
     description: "Authenticate a User",
     notes: "If user has valid email/password, create and return a JWT token",
     validate: { payload: UserCredentialsSpec, failAction: validationError },
-    response: { schema: JwtAuth, failAction: validationError }
+    response: { schema: JwtAuth, failAction: validationError },
+  },
+
+  revokeToken: {
+    auth: {
+      strategy: "jwt",
+    },
+    handler: async function(request, h) {
+      const response = await tokenMongoStore.addRevokedToken({ token: request.auth.artifacts.token });
+      if (response) {
+        return h.response(response).code(201);
+      }
+      return Boom.badImplementation("error revoking token");
+    },
+  },
+
+  checkToken: {
+    auth: {
+      strategy: "jwt",
+    },
+    handler: async function(request, h) {
+      return h.response("ok").code(200);
+    },
   },
 };
