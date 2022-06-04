@@ -124,6 +124,7 @@ export const placeApi = {
         return Boom.badRequest("Invalid Query");
       },
     },
+    response: { schema: PlaceSpecPlus, failAction: validationError },
     handler: async function(request, h) {
       const updatedPlace = request.payload;
       if (request.payload.images) {

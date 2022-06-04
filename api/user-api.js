@@ -4,6 +4,7 @@ import { createToken } from "./jwt-utils.js";
 import { db } from "../src/models/db.js";
 import { UserArray, UserSpec, UserCredentialsSpec, UserSpecPlus, IdSpec, JwtAuth } from "../src/models/joi-schemas.js";
 import { validationError } from "./logger.js";
+import Joi from "joi";
 
 const saltRounds = 10;
 
@@ -66,7 +67,8 @@ export const userApi = {
     tags: ["api"],
     description: "Get a User by Email",
     notes: "Returns details of a single user identified by their Email",
-    // response: { schema: UserSpecPlus, failAction: validationError },
+    validate: { payload: Joi.object().keys({email: Joi.string().email()}), failAction: validationError },
+    response: { schema: UserSpecPlus, failAction: validationError },
   },
 
   create: {

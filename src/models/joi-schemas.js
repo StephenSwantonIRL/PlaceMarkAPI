@@ -8,7 +8,7 @@ export const UserCredentialsSpec = {
 export const UserSpec = Joi.object()
   .keys({
     firstName: Joi.string().min(2).pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).example("Homer").required(),
-    lastName: Joi.string().min(2).pattern(new RegExp("^[a-zA-Z\u00C0-\u00FF- ]*$")).example("Simpson").required(),
+    lastName: Joi.string().min(2).pattern(new RegExp("^[a-zA-Z'\u00C0-\u00FF- ]*$")).example("Simpson").required(),
     email: Joi.string().email().example("homer@simpson.com").required(),
     password: Joi.string().min(6).example("yourSecretPassword").required(),
   })
