@@ -11,6 +11,7 @@ export const UserSpec = Joi.object()
     lastName: Joi.string().min(2).pattern(new RegExp("^[a-zA-Z'\u00C0-\u00FF- ]*$")).example("Simpson").required(),
     email: Joi.string().email().example("homer@simpson.com").required(),
     password: Joi.string().min(6).example("yourSecretPassword").required(),
+    gitHub: Joi.string().example("Username1234").optional()
   })
   .label("UserDetails");
 

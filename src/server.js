@@ -2,6 +2,7 @@ import Vision from "@hapi/vision";
 import Hapi from "@hapi/hapi";
 import Cookie from "@hapi/cookie";
 import Inert from "@hapi/inert";
+import Bell from "@hapi/bell";
 import dotenv from "dotenv";
 import path from "path";
 import Joi from "joi";
@@ -46,6 +47,7 @@ async function init() {
   await server.register(Vision);
   await server.register(Cookie);
   await server.register(Inert);
+  await server.register(Bell)
   await server.register(jwt);
   await server.register([
     Inert,
@@ -62,6 +64,16 @@ async function init() {
     validate: validate,
     verifyOptions: { algorithms: ["HS256"] },
   });
+
+  const bellAuthOptions = {
+    provider: "github",
+    password: process.env.cookie_password,
+    clientId: process.env.githubclientid,
+    clientSecret: process.env.githubclientsecret,
+    location: process.env.domain,
+    isSecure: false
+  };
+  server.auth.strategy("github-oauth", "bell", bellAuthOptions);
 
   server.auth.default("jwt");
 

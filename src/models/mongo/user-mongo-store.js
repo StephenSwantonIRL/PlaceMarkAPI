@@ -37,6 +37,11 @@ export const userMongoStore = {
     return user;
   },
 
+  async getUserByGitHub(id) {
+    const user = await User.findOne({ gitHub: id }).lean();
+    return user;
+  },
+
   async deleteUserById(id) {
     try {
       await User.deleteOne({ _id: id });

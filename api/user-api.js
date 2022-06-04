@@ -156,4 +156,31 @@ export const userApi = {
       return h.response("ok").code(200);
     },
   },
+
+  githubAuth: {
+    auth: {
+      strategy: "github-oauth",
+    },
+    handler: async function(request, h) {
+      if (!request.auth.isAuthenticated) {
+        return `Authentication failed due to: ${request.auth.error.message}`;
+      }
+      if (request.auth.isAuthenticated) {
+        const user = await db.userStore.getUserByGitHub(request.auth.credentials.profile.username);
+        if (!user) {
+          const [firstname, ...lastname] = (request.auth.credentials.profile.displayName).split(" ");
+          const gitHubUser = {
+            firstName: firstname,
+            lastName: lastname.join(" "),
+            email: request.auth.credentials.profile.email,
+            gitHub: request.auth.credentials.profile.username,
+          };
+          return h.response({ user: gitHubUser }).code(200);
+        }
+        const token = createToken(user);
+        return h.redirect(`http://localhost:3000/#/auth/${user._id}/${token}`);
+      }
+    },
+  },
+  
 };

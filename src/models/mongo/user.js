@@ -9,6 +9,7 @@ const userSchema = new Schema({
   email: String,
   password: String,
   isAdmin: Boolean,
+  gitHub: String,
 });
 
 userSchema.statics.findByEmail = function (email) {
