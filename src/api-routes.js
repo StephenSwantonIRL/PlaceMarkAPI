@@ -1,7 +1,6 @@
 import { userApi } from "../api/user-api.js"
 import { placeApi } from "../api/place-api.js";
 import { categoryApi } from "../api/category-api.js";
-import { placeController } from "./controllers/placemark-controller.js";
 
 export const apiRoutes = [
   { method: "GET", path: "/api/users", config: userApi.find },
