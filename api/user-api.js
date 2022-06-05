@@ -175,10 +175,12 @@ export const userApi = {
             email: request.auth.credentials.profile.email,
             gitHub: request.auth.credentials.profile.username,
           };
-          return h.response({ user: gitHubUser }).code(200);
+          const string = new Buffer(JSON.stringify(gitHubUser)).toString("base64")
+          const convertedString = new Buffer(string, "base64").toString("ascii")
+          return h.redirect(`${process.env.frontEndDomain}/#/github/${ string}`)
         }
         const token = createToken(user);
-        return h.redirect(`http://localhost:3000/#/auth/${user._id}/${token}`);
+        return h.redirect(`${process.env.frontEndDomain}/#/auth/${user._id}/${token}`);
       }
     },
   },
